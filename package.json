@@ -1,0 +1,84 @@
+{
+  "name": "flexget-fansubs-config-generator",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.11",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "concurrently": "^7.6.0",
+    "electron": "^22.2.0",
+    "electron-builder": "^23.6.0",
+    "electron-is-dev": "^2.0.0",
+    "nodemon": "^2.0.20",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.5",
+    "wait-on": "^7.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start-react": "react-scripts start",
+    "build-react": "react-scripts build",
+    "start-electron": "nodemon --watch ./public/* --exec \"electron .\"",
+    "dev": "concurrently \"yarn start-react\" \"wait-on http://127.0.0.1:3000 && yarn start-electron\" ",
+    "postinstall": "electron-builder install-app-deps",
+    "pack-app": "yarn build-react && electron-builder --dir",
+    "pack-build": "electron-builder --dir",
+    "build": "yarn build-react && electron-builder",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "build": {
+    "appID": "com.localKenny.flexget-fansubs-config-generator",
+    "productName": "flexget-fansubs-config-generator",
+    "copyright": "lol",
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "extraResources": [
+      {
+        "from": ".build/assets/randomfile.png",
+        "to": "assets/randomfile.png"
+      },
+      {
+        "from": "./db/",
+        "to": "db/",
+        "filter": ["**/*"]
+      }
+    ],
+    "win":
+      {
+        "icon": "./build/images/appicon.ico",
+        "target": ["7z"]
+      }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "main": "public/electron.js",
+  "homepage": "./"
+}
