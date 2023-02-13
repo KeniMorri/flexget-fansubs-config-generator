@@ -1,14 +1,16 @@
-const { app, BrowserWindow } = require('electron'); // electron
+const { app, BrowserWindow, ipcMain, clipboard } = require('electron'); // electron
 const isDev = require('electron-is-dev'); // To check if electron is in development mode
 const path = require('path');
 
 let mainWindow;
 
+
+
 // Initializing the Electron Window
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 600, // width of window
-    height: 600, // height of window
+    width: 1800, // width of window
+    height: 1200, // height of window
     webPreferences: {
       // The preload file where we will perform our app communication
       preload: isDev 
@@ -18,6 +20,11 @@ const createWindow = () => {
       contextIsolation: true, // Isolating context so our app is not exposed to random javascript executions making it safer.
     },
   });
+
+  //Show Dev tools if inDev
+  if ( isDev ) {
+    mainWindow.webContents.openDevTools();
+  }
 
 	// Loading a webpage inside the electron window we just created
   mainWindow.loadURL(
@@ -59,6 +66,26 @@ app.whenReady().then(async () => {
       .catch((err) => console.log(err));
   }
 });
+
+// Comunication between frontend to backend
+
+//Handles Test Case of pressing a button
+ipcMain.on('button', (args) => {
+  console.log('Button Pressed');
+})
+
+
+ipcMain.handle('submit', (event,args) => {
+  console.log('Submit Button Pressed');
+  console.log(args);
+  console.log(args.name);
+})
+
+
+ipcMain.handle('clipboard', (event, args) => {
+  console.log('Putting text into clipboard');
+  clipboard.writeText(args.clipboard);
+})
 
 // Exiting the app
 app.on('window-all-closed', () => {
