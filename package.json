@@ -52,14 +52,17 @@
       {
         "from": "./db/",
         "to": "db/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
-    "win":
-      {
-        "icon": "./build/images/appicon.ico",
-        "target": ["7z"]
-      }
+    "win": {
+      "icon": "./build/images/appicon.ico",
+      "target": [
+        "7z"
+      ]
+    }
   },
   "eslintConfig": {
     "extends": [

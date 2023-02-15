@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, clipboard } = require('electron'); // electron
 const isDev = require('electron-is-dev'); // To check if electron is in development mode
 const path = require('path');
-
+const puppeteer = require('./puppeteer');
 let mainWindow;
 
 
@@ -72,6 +72,7 @@ app.whenReady().then(async () => {
 //Handles Test Case of pressing a button
 ipcMain.on('button', (args) => {
   console.log('Button Pressed');
+  puppeteer.scanFansubber();
 })
 
 

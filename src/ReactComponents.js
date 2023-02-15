@@ -17,7 +17,7 @@ class testImplementation extends React.Component {
 
     handleClick(event) {
         window.api.button();
-        alert('Clicked button' + event.target.value);
+        //alert('Clicked button' + event.target.value);
     }
 
     handleSubmit = async(event) => {
