@@ -1,57 +1,41 @@
 const puppeteer = require('puppeteer');
 const fanSubber = require('./fansubSources/subsplease');
-const tvDB = require('./seriesTitleVerifier/tvdb')
+const seriesTitleVerifier = require('./seriesTitleVerifier/tvdb')
 const {anime} = require('./dataPacker');
 
-var animeList = [];
-function runRoutine() {
-  (async () => {
-    const browser = await puppeteer.launch({headless: false});
-    const page = await browser.newPage();
-
-    await page.goto('https://developer.chrome.com/');
-
-    // Set screen size
-    await page.setViewport({width: 1080, height: 1024});
-
-    // Type into search box
-    await page.type('.search-box__input', 'automate beyond recorder');
-
-    // Wait and click on first result
-    const searchResultSelector = '.search-box__link';
-    await page.waitForSelector(searchResultSelector);
-    await page.click(searchResultSelector);
-
-    // Locate the full title with a unique string
-    const textSelector = await page.waitForSelector(
-      'text/Customize and automate'
-    );
-    const fullTitle = await textSelector.evaluate(el => el.textContent);
-
-    // Print the full title
-    console.log('The title of this blog post is "%s".', fullTitle);
-
-    await browser.close();
-  })();
-}
-
+//Scans source for titles
 async function scanFansubber() {
+  //Set this as a "setting" variable later on
+  let splitAmount = 8;
   
+  //Gets list of shows from fanSubber
   let animeTitles = await fanSubber.getListOfShows();
-  console.log(await animeTitles);
+
+  //Split up the results of getting list of shows for multithreaded search
+  let splitAddion = animeTitles.length/splitAmount;
+  let splitAnimeTitles = [];
+  for(let i = 0; i < animeTitles.length; i = i + splitAddion ) {
+    splitAnimeTitles.push(animeTitles.slice(i, i + splitAddion) );
+  }
   
-  /*
-  let animeTitles = [];
-  animeTitles.push(new anime('naruto', '1', 'test'));
-  animeTitles.push(new anime('bleach', '1', 'test'));
-  animeTitles.push(new anime('My Hero Academia', '1', 'test'));
-  animeTitles.push(new anime('One Punch man', '1', 'test'));
-  animeTitles.push(new anime('boochi the rock', '1', 'test'));
-  */
-  animeTitles = await tvDB.queryTitle(animeTitles);
-  console.log(await animeTitles);
+  Promise.all(splitAnimeTitles.map(anime => seriesTitleVerifier.queryTitle(anime)))
+  .then((values) => {
+    //Combining all returned values into a simpler array
+    let newArray = values[0];
+    if (values.length > 1) {
+      for(let i = 1; i < values.length; i++) {
+        newArray = newArray.concat(values[i]);
+        //console.log(newArray);
+      }
+    }
+    console.log(newArray);
+    console.log(newArray.length);
+    
+  })
+  
+  //console.log(await animeTitles);
 
   return 1;
 }
 
-module.exports = { runRoutine, scanFansubber };
+module.exports = { scanFansubber };
